@@ -17,6 +17,7 @@ namespace emily2.Options
         {
             var secretsId = Assembly.GetExecutingAssembly().GetCustomAttribute<UserSecretsIdAttribute>().UserSecretsId;
             var secretsPath = PathHelper.GetSecretsPathFromSecretsId(secretsId);
+            Directory.CreateDirectory(Path.GetDirectoryName(secretsPath));
 
             var updatedSecretsJson = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(secretsPath, updatedSecretsJson);
