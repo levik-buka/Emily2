@@ -8,19 +8,42 @@ namespace emily2.Options
     {
         public UserOptions User { get; set; }
 
+
         public SecretOptions(UserOptions userOptions) 
-        { 
+        {
             User = userOptions;
         }
 
+        /// <summary>
+        /// Method has side effects
+        /// </summary>
         public void SaveSecretOptions()
         {
-            var secretsId = Assembly.GetExecutingAssembly().GetCustomAttribute<UserSecretsIdAttribute>().UserSecretsId;
-            var secretsPath = PathHelper.GetSecretsPathFromSecretsId(secretsId);
-            Directory.CreateDirectory(Path.GetDirectoryName(secretsPath));
+            var updatedSecretsJson = GenerateSecretOptions(this);
 
-            var updatedSecretsJson = JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
-            File.WriteAllText(secretsPath, updatedSecretsJson);
+            // get userSecretsId for assembly's meta data
+            var userSecretsId = Assembly.GetExecutingAssembly().GetCustomAttribute<UserSecretsIdAttribute>().UserSecretsId;
+
+            // define path to secrets.json in private roaming folder based on userSecretsId (%APPDATA%\Microsoft\UserSecrets)
+            var secretsJsonPath = PathHelper.GetSecretsPathFromSecretsId(userSecretsId);
+
+            SaveSecretOptions(secretsJsonPath, updatedSecretsJson);
+        }
+
+        internal void SaveSecretOptions(string secretsJsonPath, string secretsJson)
+        {
+            // create private roaming folder if missing
+            Directory.CreateDirectory(Path.GetDirectoryName(secretsJsonPath));
+
+            // save secrets.json to private roaming folder
+            File.WriteAllText(secretsJsonPath, secretsJson);
+        }
+
+        internal string GenerateSecretOptions(SecretOptions secretOptions)
+        {
+            // serialize SecretOptions
+            var updatedSecretsJson = JsonSerializer.Serialize(secretOptions, new JsonSerializerOptions { WriteIndented = true });
+            return updatedSecretsJson;
         }
     }
 }
