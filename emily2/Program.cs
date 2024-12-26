@@ -3,9 +3,11 @@ using emily2.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NReco.Logging.File;
+using System.Security.Cryptography;
 
 IConfigurationRoot config = new ConfigurationBuilder()
-    .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile("logsettings.json", optional: false, reloadOnChange: true)
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
     .AddEnvironmentVariables()
     .AddUserSecrets<Program>()
     .Build();
@@ -13,8 +15,9 @@ IConfigurationRoot config = new ConfigurationBuilder()
 emily2.Logger.LoggerExtensions.LoggerFactory = LoggerFactory.Create(builder =>
 {
     var loggingOptions = config.GetRequiredSection("Logging");
-    builder.AddConfiguration(loggingOptions);
-    builder.AddFile(loggingOptions); // https://github.com/nreco/logging/tree/master
+    builder
+        .AddConfiguration(loggingOptions)
+        .AddFile(loggingOptions); // https://github.com/nreco/logging/tree/master
 });
 
 ILogger logger = emily2.Logger.LoggerExtensions.LoggerFactory.CreateLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
@@ -22,16 +25,16 @@ using var mainScope = logger.BeginMethodScope();
 
 {
     mainScope.LogTrace("Reading user options");
-    UserOptions userOptions = config.GetRequiredSection("User").Get<UserOptions>();
+    UserOptions? userOptions = config
+        .GetRequiredSection("User")
+        .Get<UserOptions>()?
+        .LoadUserRSA();
 
     // Write the values to the console.
-    Console.WriteLine($"KeyOne = {userOptions.UserName}");
-    Console.WriteLine($"KeyTwo = {userOptions.Email}");
-    Console.WriteLine($"PrivateKey = {userOptions.PrivateKey}");
+    Console.WriteLine($"Username: {userOptions.UserName} <{userOptions.Email}>");
+    Console.WriteLine($"Private Key = {userOptions.RSA?.ExportRSAPrivateKeyPem()}");
+    Console.WriteLine($"Public Key  = {userOptions.RSA?.ExportRSAPublicKeyPem()}");
 
-    userOptions.PrivateKey = Guid.NewGuid().ToString();
-    Console.WriteLine($"New PrivateKey = {userOptions.PrivateKey}");
-
-    var secretOptions = new SecretOptions(userOptions);
-    secretOptions.SaveSecretOptions();
+    //var secretOptions = new SecretOptions(userOptions.RSA);
+    //secretOptions.SaveSecretOptions();
 }

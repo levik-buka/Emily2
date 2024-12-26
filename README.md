@@ -12,7 +12,7 @@ Yet another application for building family tree and keeping information about r
 
 ## Data structure
 
-    ├── data
+    ├── family base path
     │   ├── surname firstname id
     │   │   ├── surname firstname id.json
     │   │   ├── surname firstname id portrait.jpg

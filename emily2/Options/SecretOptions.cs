@@ -3,14 +3,15 @@ using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text.Json;
 using emily2.Logger;
+using System.Security.Cryptography;
 
 namespace emily2.Options
 {
-    internal class SecretOptions(UserOptions userOptions)
+    internal class SecretOptions(RSA rsa)
     {
         private ILogger _logger = Logger.LoggerExtensions.CreateClassLogger();
 
-        public UserOptions User { get; set; } = userOptions;
+        public string PrivateKey { get; set; } = rsa.ExportRSAPrivateKeyPem();
 
 
         /// <summary>
