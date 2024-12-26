@@ -1,24 +1,25 @@
 ﻿using Microsoft.Extensions.Configuration.UserSecrets;
+using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text.Json;
+using emily2.Logger;
 
 namespace emily2.Options
 {
-    internal class SecretOptions
+    internal class SecretOptions(UserOptions userOptions)
     {
-        public UserOptions User { get; set; }
+        private ILogger _logger = Logger.LoggerExtensions.CreateClassLogger();
 
+        public UserOptions User { get; set; } = userOptions;
 
-        public SecretOptions(UserOptions userOptions) 
-        {
-            User = userOptions;
-        }
 
         /// <summary>
         /// Method has side effects
         /// </summary>
         public void SaveSecretOptions()
         {
+            _logger.TraceMethod();
+
             var updatedSecretsJson = GenerateSecretOptions(this);
 
             // get userSecretsId for assembly's meta data
@@ -26,7 +27,7 @@ namespace emily2.Options
 
             // define path to secrets.json in private roaming folder based on userSecretsId (%APPDATA%\Microsoft\UserSecrets)
             var secretsJsonPath = PathHelper.GetSecretsPathFromSecretsId(userSecretsId);
-
+                
             SaveSecretOptions(secretsJsonPath, updatedSecretsJson);
         }
 
@@ -39,7 +40,7 @@ namespace emily2.Options
             File.WriteAllText(secretsJsonPath, secretsJson);
         }
 
-        internal string GenerateSecretOptions(SecretOptions secretOptions)
+        internal static string GenerateSecretOptions(SecretOptions secretOptions)
         {
             // serialize SecretOptions
             var updatedSecretsJson = JsonSerializer.Serialize(secretOptions, new JsonSerializerOptions { WriteIndented = true });

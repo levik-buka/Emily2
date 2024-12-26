@@ -1,11 +1,23 @@
 ﻿using emily2.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using NReco.Logging.File;
 
 IConfigurationRoot config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
     .AddEnvironmentVariables()
     .AddUserSecrets<Program>()
     .Build();
+
+emily2.Logger.LoggerExtensions.LoggerFactory = LoggerFactory.Create(builder =>
+{
+    var loggingOptions = config.GetRequiredSection("Logging");
+    builder.AddConfiguration(loggingOptions);
+    builder.AddFile(loggingOptions); // https://github.com/nreco/logging/tree/master
+});
+
+ILogger logger = emily2.Logger.LoggerExtensions.CreateClassLogger();
+logger.LogDebug("logging is fun");
 
 UserOptions userOptions = config.GetRequiredSection("User").Get<UserOptions>();
 
