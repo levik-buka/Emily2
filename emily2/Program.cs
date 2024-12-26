@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 
 IConfigurationRoot config = new ConfigurationBuilder()
     .AddJsonFile("logsettings.json", optional: false, reloadOnChange: true)
-    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: false)
+    .AddJsonFile(ApplicationOptions.APPLICATION_OPTIONS_FILE, optional: true, reloadOnChange: false)
     .AddEnvironmentVariables()
     .AddUserSecrets<Program>()
     .Build();
@@ -26,15 +26,15 @@ using var mainScope = logger.BeginMethodScope();
 {
     mainScope.LogTrace("Reading user options");
     UserOptions? userOptions = config
-        .GetRequiredSection("User")
+        .GetSection("User")?
         .Get<UserOptions>()?
         .LoadUserRSA();
 
     // Write the values to the console.
-    Console.WriteLine($"Username: {userOptions.UserName} <{userOptions.Email}>");
-    Console.WriteLine($"Private Key = {userOptions.RSA?.ExportRSAPrivateKeyPem()}");
-    Console.WriteLine($"Public Key  = {userOptions.RSA?.ExportRSAPublicKeyPem()}");
+    Console.WriteLine($"Username: {userOptions?.UserName} <{userOptions?.Email}>");
+    Console.WriteLine($"Private Key = {userOptions?.RSA.ExportRSAPrivateKeyPem()}");
+    Console.WriteLine($"Public Key  = {userOptions?.RSA.ExportRSAPublicKeyPem()}");
 
-    //var secretOptions = new SecretOptions(userOptions.RSA);
-    //secretOptions.SaveSecretOptions();
+    var appOptions = new ApplicationOptions(userOptions);
+    appOptions.SaveApplicationOptions();
 }

@@ -23,7 +23,7 @@
     <None Update="logsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="appsettings.json">
+    <None Update="appsettings2.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

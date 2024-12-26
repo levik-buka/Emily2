@@ -11,7 +11,7 @@ namespace emily2.Options
     {
         internal static UserOptions LoadUserRSA(this UserOptions userOptions)
         {
-            if (userOptions == null) return null;
+            if (string.IsNullOrEmpty(userOptions?.Email)) return userOptions;
 
             // Create the CspParameters object and set the key container
             // name used to store the RSA key pair.
