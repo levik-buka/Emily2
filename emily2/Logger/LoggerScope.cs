@@ -13,12 +13,32 @@ namespace emily2.Logger
         private ILogger _logger;
         private EventId _eventId;
 
+        /// <summary>
+        /// Creating scope for logging in public/internal methods
+        /// </summary>
+        /// <param name="logger"></param>
+        /// <param name="scope"></param>
+        /// <param name="args"></param>
         public LoggerScope(ILogger logger, MethodBase scope, params object[] args)
         {
             _logger = logger;
             _eventId = new EventId(1, scope.Name);
 
             _logger.LogTrace("Enter {scope}", scope.MethodWithParamsToString(args));
+        }
+
+        /// <summary>
+        /// Creates sub-scope for logging in protected/private methods
+        /// </summary>
+        /// <param name="parentScope"></param>
+        /// <param name="scope"></param>
+        /// <param name="args"></param>
+        public LoggerScope(LoggerScope parentScope, MethodBase scope, params object[] args)
+        {
+            _logger = parentScope._logger;
+            _eventId = new EventId(parentScope._eventId.Id + 1, scope.Name);
+
+            parentScope.LogTrace("Enter {scope}", scope.MethodWithParamsToString(args));
         }
 
         protected virtual void Dispose(bool disposing)

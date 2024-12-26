@@ -18,8 +18,6 @@ namespace emily2.Options
         /// </summary>
         public void SaveSecretOptions()
         {
-            _logger.TraceMethod();
-
             var updatedSecretsJson = GenerateSecretOptions(this);
 
             // get userSecretsId for assembly's meta data
@@ -33,6 +31,8 @@ namespace emily2.Options
 
         internal void SaveSecretOptions(string secretsJsonPath, string secretsJson)
         {
+            _logger.LogTraceMethod(secretsJsonPath);
+
             // create private roaming folder if missing
             Directory.CreateDirectory(Path.GetDirectoryName(secretsJsonPath));
 

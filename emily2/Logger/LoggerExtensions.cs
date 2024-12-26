@@ -34,12 +34,20 @@ namespace emily2.Logger
             return new LoggerScope(logger, sf.GetMethod(), args);
         }
 
-        internal static void TraceMethod(this ILogger logger, params object[] args)
+        internal static LoggerScope BeginSubScope(this LoggerScope parentScope, params object[] args)
         {
             StackTrace st = new StackTrace();
             StackFrame sf = st.GetFrame(STACK_FRAME_OFFSET);
 
-            logger.LogTrace("Called {method}", sf.GetMethod().MethodWithParamsToString(args));
+            return new LoggerScope(parentScope, sf.GetMethod(), args);
+        }
+
+        internal static void LogTraceMethod(this ILogger logger, params object[] args)
+        {
+            StackTrace st = new StackTrace();
+            StackFrame sf = st.GetFrame(STACK_FRAME_OFFSET);
+
+            logger.LogTrace("Call {method}", sf.GetMethod().MethodWithParamsToString(args));
         }
 
         internal static string MethodWithParamsToString(this MethodBase mehtod, params object[] args)
