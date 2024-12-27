@@ -7,12 +7,16 @@ using System.Security.Cryptography;
 
 namespace emily2.Options
 {
-    internal class SecretOptions(RSA rsa)
+    internal class SecretOptions
     {
         private ILogger _logger = Logger.LoggerExtensions.CreateClassLogger();
 
-        public string PrivateKey { get; set; } = rsa.ExportRSAPrivateKeyPem();
+        public string PrivateKey { get; set; }
 
+        internal void Reset()
+        {
+            PrivateKey = null;
+        }
 
         /// <summary>
         /// Method has side effects

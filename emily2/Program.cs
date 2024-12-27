@@ -25,16 +25,18 @@ using var mainScope = logger.BeginMethodScope();
 
 {
     mainScope.LogTrace("Reading user options");
-    UserOptions? userOptions = config
-        .GetSection("User")?
-        .Get<UserOptions>()?
-        .LoadUserRSA();
+    SecretOptions userSecret = config.Get<SecretOptions>();
+    ApplicationOptions appSettings = config
+        .Get<ApplicationOptions>()?
+        .LoadUserSecrets(userSecret);
+
 
     // Write the values to the console.
-    Console.WriteLine($"Username: {userOptions?.UserName} <{userOptions?.Email}>");
-    Console.WriteLine($"Private Key = {userOptions?.RSA.ExportRSAPrivateKeyPem()}");
-    Console.WriteLine($"Public Key  = {userOptions?.RSA.ExportRSAPublicKeyPem()}");
+    Console.WriteLine($"Username: {appSettings.User?.UserName} <{appSettings.User?.Email}>");
+    Console.WriteLine($"Private Key = {appSettings.User?.RSA.ExportRSAPrivateKeyPem()}");
+    Console.WriteLine($"Public Key  = {appSettings.User?.RSA.ExportRSAPublicKeyPem()}");
 
-    var appOptions = new ApplicationOptions(userOptions);
-    appOptions.SaveApplicationOptions();
+    appSettings
+        .SaveUserSecrets(userSecret)
+        .SaveApplicationOptions();
 }
