@@ -5,13 +5,16 @@ namespace emily2
 {
     internal class EmilyTasks()
     {
-        internal static void CheckOrCreateUser(ApplicationOptions appSettings, SecretOptions secretOptions)
+        internal static ApplicationOptions CheckOrCreateUser(ApplicationOptions appSettings, SecretOptions secretOptions)
         {
             if (appSettings == null) throw new ArgumentNullException(nameof(appSettings));
+
+            bool newUser = false;
 
             // initializating user
             if (string.IsNullOrEmpty(appSettings.User?.Email))
             {
+                newUser = true;
                 appSettings.User = new UserOptions();
 
                 Console.Write("Input user's name: ");
@@ -29,7 +32,25 @@ namespace emily2
             Console.WriteLine($"{appSettings.User.RSA.ExportRSAPrivateKeyPem()}");
             Console.WriteLine($"{appSettings.User.RSA.ExportRSAPublicKeyPem()}");
             Console.WriteLine($"Secret container: {appSettings.SecretContainer}");
-            Console.WriteLine($"Family's project path: {appSettings.ProjectPath}");
+
+            if (newUser)
+            {
+                Console.Write($"Save user (y/n)? ");
+                ConsoleKeyInfo createProject = Console.ReadKey();
+                Console.WriteLine();
+
+                if (char.ToLower(createProject.KeyChar) == 'y')
+                {
+                    // continue with new user
+                    return appSettings;
+                }
+
+                // return null to exit application
+                return null;
+            }
+
+            // continue with existing user
+            return appSettings;
         }
 
         internal static Family.Family CheckOrCreateProject(ApplicationOptions appSettings)
@@ -78,6 +99,7 @@ namespace emily2
 
             if (openOrCreateProject == true)
             {
+                Console.WriteLine($"Opening family's project path: {appSettings.ProjectPath}");
                 return new Family.Family(appSettings, Logger.LoggerExtensions.LoggerFactory.CreateLogger<Family.Family>());
             }
 

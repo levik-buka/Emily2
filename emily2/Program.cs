@@ -32,7 +32,9 @@ try
         .Get<ApplicationOptions>()?
         .LoadUserSecrets(userSecret);
 
-    EmilyTasks.CheckOrCreateUser(appSettings, userSecret);
+    appSettings = EmilyTasks.CheckOrCreateUser(appSettings, userSecret);
+    if (appSettings == null) return 0; // exiting
+
     Family family = EmilyTasks.CheckOrCreateProject(appSettings);
 
     // saving settings before opening the project
@@ -41,10 +43,8 @@ try
         .SaveUserSecrets(userSecret)
         .SaveApplicationOptions();
 
-    if (family != null)
-    {
+    if (family == null) return 0;   // exiting
 
-    }
 }
 catch (Exception e)
 {
