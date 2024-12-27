@@ -1,9 +1,9 @@
-﻿using emily2.Logger;
+﻿using emily2.Family;
+using emily2.Logger;
 using emily2.Options;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NReco.Logging.File;
-using System.Security.Cryptography;
 
 IConfigurationRoot config = new ConfigurationBuilder()
     .AddJsonFile("logsettings.json", optional: false, reloadOnChange: true)
@@ -30,7 +30,7 @@ using var mainScope = logger.BeginMethodScope();
         .Get<ApplicationOptions>()?
         .LoadUserSecrets(userSecret);
 
-
+    // initializating user
     if (string.IsNullOrEmpty(appSettings.User?.Email))
     {
         appSettings.User = new UserOptions();
@@ -50,14 +50,58 @@ using var mainScope = logger.BeginMethodScope();
     Console.WriteLine($"{appSettings.User.RSA.ExportRSAPrivateKeyPem()}");
     Console.WriteLine($"{appSettings.User.RSA.ExportRSAPublicKeyPem()}");
     Console.WriteLine($"Secret container: {appSettings.SecretContainer}");
+    Console.WriteLine($"Family's project path: {appSettings.ProjectPath}");
 
-    Console.Write("Save settings (Y/N)? ");
-    ConsoleKeyInfo yesNo = Console.ReadKey(false);
-
-    if (char.ToLower(yesNo.KeyChar) == 'y')
+    // initializating project
+    bool? openOrCreateProject = null;
+    do
     {
-        appSettings
-            .SaveUserSecrets(userSecret)
-            .SaveApplicationOptions();
+        if (string.IsNullOrEmpty(appSettings.ProjectPath))
+        {
+            Console.Write("Input family name (empty to exit): ");
+            appSettings.SetProjectPathForFamily(Console.ReadLine());
+        }
+
+        if (string.IsNullOrEmpty(appSettings.ProjectPath))
+        {
+            openOrCreateProject = false; // exiting
+        }
+        else 
+        {
+            if (Path.Exists(appSettings.ProjectPath))
+            {
+                openOrCreateProject = true;
+            }
+            else
+            {
+                Console.Write($"Family project path ({appSettings.ProjectPath}) missing. Create project (y/n)? ");
+                ConsoleKeyInfo createProject = Console.ReadKey();
+                Console.WriteLine();
+
+                if (char.ToLower(createProject.KeyChar) == 'y')
+                {
+                    openOrCreateProject = true;
+                }
+                else
+                {
+                    // reset family question and ask again
+                    appSettings.ProjectPath = null; 
+                }
+            }
+        }
+    }
+    while (!openOrCreateProject.HasValue);
+
+    // saving settings before opening the project
+    // so settings will be saved even if application falls
+    appSettings
+        .SaveUserSecrets(userSecret)
+        .SaveApplicationOptions();
+
+    if (openOrCreateProject == true)
+    {
+        var family = new Family(appSettings, emily2.Logger.LoggerExtensions.LoggerFactory.CreateLogger<Family>());
     }
 }
+
+return 0;

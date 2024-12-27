@@ -35,6 +35,8 @@ namespace emily2.Options
 
         public SecretContainer SecretContainer { get; set; }
 
+        public string ProjectPath { get; set; }
+
         /// <summary>
         /// Method has side effects
         /// </summary>
@@ -53,6 +55,17 @@ namespace emily2.Options
             // serialize SecretOptions
             var updatedSecretsJson = JsonSerializer.Serialize(options, new JsonSerializerOptions { WriteIndented = true });
             return updatedSecretsJson;
+        }
+
+        internal void SetProjectPathForFamily(string family)
+        {
+            if (string.IsNullOrEmpty(family))
+            {
+                ProjectPath = null;
+                return;
+            }
+
+            ProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Emily\\" + family;
         }
     }
 }
