@@ -31,12 +31,33 @@ using var mainScope = logger.BeginMethodScope();
         .LoadUserSecrets(userSecret);
 
 
-    // Write the values to the console.
-    Console.WriteLine($"Username: {appSettings.User?.UserName} <{appSettings.User?.Email}>");
-    Console.WriteLine($"Private Key = {appSettings.User?.RSA.ExportRSAPrivateKeyPem()}");
-    Console.WriteLine($"Public Key  = {appSettings.User?.RSA.ExportRSAPublicKeyPem()}");
+    if (string.IsNullOrEmpty(appSettings.User?.Email))
+    {
+        appSettings.User = new UserOptions();
 
-    appSettings
-        .SaveUserSecrets(userSecret)
-        .SaveApplicationOptions();
+        Console.Write("Input user's name: ");
+        appSettings.User.UserName = Console.ReadLine();
+
+        Console.Write("Input user's e-mail: ");
+        appSettings.User.Email = Console.ReadLine();
+
+        // create new RSA key for the user
+        appSettings.LoadUserSecrets(userSecret);
+    }
+
+    // Write the values to the console.
+    Console.WriteLine($"Username: {appSettings.User.UserName} <{appSettings.User.Email}>");
+    Console.WriteLine($"{appSettings.User.RSA.ExportRSAPrivateKeyPem()}");
+    Console.WriteLine($"{appSettings.User.RSA.ExportRSAPublicKeyPem()}");
+    Console.WriteLine($"Secret container: {appSettings.SecretContainer}");
+
+    Console.Write("Save settings (Y/N)? ");
+    ConsoleKeyInfo yesNo = Console.ReadKey(false);
+
+    if (char.ToLower(yesNo.KeyChar) == 'y')
+    {
+        appSettings
+            .SaveUserSecrets(userSecret)
+            .SaveApplicationOptions();
+    }
 }

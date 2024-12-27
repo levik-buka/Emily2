@@ -20,6 +20,8 @@ namespace emily2.Options
 
             if (appSettings.SecretContainer == SecretContainer.UserContainer)
             {
+                // https://learn.microsoft.com/en-us/dotnet/standard/security/how-to-store-asymmetric-keys-in-a-key-container
+
                 // Create the CspParameters object and set the key container
                 // name used to store the RSA key pair.
                 var parameters = new CspParameters
