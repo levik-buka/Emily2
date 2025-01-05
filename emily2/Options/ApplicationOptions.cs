@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration.UserSecrets;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -66,6 +67,13 @@ namespace emily2.Options
             }
 
             ProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Emily\\" + family;
+        }
+
+        internal string? GetFamilyName()
+        {
+            if (ProjectPath == null) return null;
+
+            return new DirectoryInfo(ProjectPath).Name;
         }
     }
 }

@@ -2,6 +2,7 @@
 using emily2.Family;
 using emily2.Logger;
 using emily2.Options;
+using emily2.Repository;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using NReco.Logging.File;
@@ -46,6 +47,11 @@ try
 
     if (family == null) return 0;   // exiting
 
+    IFamilyRepository repository = appSettings.CreateFamilyRepository(loggerFactory);
+    repository.LoadFamilyMembers(family);
+    repository.AddUserToFamilyMembers(family);
+
+    EmilyTasks.PrintFamilyMembers(family);
 }
 catch (Exception e)
 {

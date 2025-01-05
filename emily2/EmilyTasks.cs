@@ -85,6 +85,7 @@ namespace emily2
 
                         if (char.ToLower(createProject.KeyChar) == 'y')
                         {
+                            Directory.CreateDirectory(appSettings.ProjectPath);
                             openOrCreateProject = true;
                         }
                         else
@@ -100,11 +101,25 @@ namespace emily2
             if (openOrCreateProject == true)
             {
                 Console.WriteLine($"Opening family's project path: {appSettings.ProjectPath}");
-                return new Family.Family(appSettings, logFactory.CreateLogger<Family.Family>());
+                return new Family.Family(appSettings.GetFamilyName()!, logFactory.CreateLogger<Family.Family>());
             }
 
             // return null to exit application
             return null;
+        }
+
+        internal static void PrintFamilyMembers(Family.Family? family)
+        {
+            int index = 0;
+
+            foreach (var member in family ?? Enumerable.Empty<Family.FamilyMember>()) 
+            {
+                // index starts from 1
+                Console.WriteLine($"{++index} - {member.Name}");
+                Console.WriteLine($"\tGUID:  {member.Id}");
+                Console.WriteLine($"\tEMAIL: {member.Email}");
+                Console.WriteLine();
+            }
         }
     }
 }

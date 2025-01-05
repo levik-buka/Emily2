@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using emily2.Repository;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,8 +23,8 @@ namespace emily2.Options
             if (appSettings.SecretContainer == SecretContainer.UserContainer)
             {
 #pragma warning disable CA1416
-                // https://learn.microsoft.com/en-us/dotnet/standard/security/how-to-store-asymmetric-keys-in-a-key-container
                 // supported only on Windows (pragma)
+                // https://learn.microsoft.com/en-us/dotnet/standard/security/how-to-store-asymmetric-keys-in-a-key-container
 
                 // Create the CspParameters object and set the key container
                 // name used to store the RSA key pair.
