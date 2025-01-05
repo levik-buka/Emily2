@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
@@ -9,7 +10,7 @@ namespace emily2.Options
 {
     internal static class OptionsExtensions
     {
-        internal static ApplicationOptions LoadUserSecrets(this ApplicationOptions appSettings, SecretOptions secretOptions)
+        internal static ApplicationOptions? LoadUserSecrets(this ApplicationOptions? appSettings, SecretOptions? secretOptions)
         {
             if (string.IsNullOrEmpty(appSettings?.User?.Email))
             {
@@ -20,7 +21,9 @@ namespace emily2.Options
 
             if (appSettings.SecretContainer == SecretContainer.UserContainer)
             {
+#pragma warning disable CA1416
                 // https://learn.microsoft.com/en-us/dotnet/standard/security/how-to-store-asymmetric-keys-in-a-key-container
+                // supported only on Windows (pragma)
 
                 // Create the CspParameters object and set the key container
                 // name used to store the RSA key pair.
@@ -32,6 +35,7 @@ namespace emily2.Options
                 // Create a new instance of RSACryptoServiceProvider that accesses
                 // the key container MyKeyContainerName.
                 appSettings.User.RSA = new RSACryptoServiceProvider(parameters);
+#pragma warning restore CA1416
             }
             else // SecretContainer.SettingsFile (secretOptions)
             {
@@ -51,8 +55,10 @@ namespace emily2.Options
             return appSettings;
         }
 
-        internal static ApplicationOptions SaveUserSecrets(this ApplicationOptions appSettings, SecretOptions secretOptions)
+        internal static ApplicationOptions SaveUserSecrets(this ApplicationOptions appSettings, SecretOptions? secretOptions, ILogger logger)
         {
+            ArgumentNullException.ThrowIfNull(appSettings);
+
             if (secretOptions == null) return appSettings;
 
             // reseting private key in any case.
@@ -60,14 +66,14 @@ namespace emily2.Options
             secretOptions.Reset();
 
             // if user set
-            if (!string.IsNullOrEmpty(appSettings?.User?.Email) && appSettings?.SecretContainer == SecretContainer.SettingsFile)
+            if (!string.IsNullOrEmpty(appSettings.User?.Email) && appSettings?.SecretContainer == SecretContainer.SettingsFile)
             {
-                secretOptions.PrivateKey = appSettings.User.RSA.ExportRSAPrivateKeyPem();
+                secretOptions.PrivateKey = appSettings.User.RSA!.ExportRSAPrivateKeyPem();
             }
 
-            secretOptions.SaveSecretOptions();
+            secretOptions.SaveSecretOptions(logger);
 
-            return appSettings;
+            return appSettings!;
         }
     }
 }

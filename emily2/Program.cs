@@ -13,7 +13,7 @@ IConfigurationRoot config = new ConfigurationBuilder()
     .AddUserSecrets<Program>()
     .Build();
 
-emily2.Logger.LoggerExtensions.LoggerFactory = LoggerFactory.Create(builder =>
+ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
 {
     var loggingOptions = config.GetRequiredSection("Logging");
     builder
@@ -21,27 +21,28 @@ emily2.Logger.LoggerExtensions.LoggerFactory = LoggerFactory.Create(builder =>
         .AddFile(loggingOptions); // https://github.com/nreco/logging/tree/master
 });
 
-ILogger logger = emily2.Logger.LoggerExtensions.LoggerFactory.CreateLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+// create MAIN logger
+ILogger logger = loggerFactory.CreateLogger(System.Reflection.MethodBase.GetCurrentMethod()!.DeclaringType!);
 using var mainScope = logger.BeginMethodScope();
 
 try
 {
     mainScope.LogTrace("Reading user options");
-    SecretOptions userSecret = config.Get<SecretOptions>();
-    ApplicationOptions appSettings = config
+    SecretOptions userSecret = config.Get<SecretOptions>()!;
+    ApplicationOptions? appSettings = config
         .Get<ApplicationOptions>()?
         .LoadUserSecrets(userSecret);
 
     appSettings = EmilyTasks.CheckOrCreateUser(appSettings, userSecret);
     if (appSettings == null) return 0; // exiting
 
-    Family family = EmilyTasks.CheckOrCreateProject(appSettings);
+    Family? family = EmilyTasks.CheckOrCreateProject(appSettings, loggerFactory);
 
     // saving settings before opening the project
     // so settings will be saved even if application falls
     appSettings
-        .SaveUserSecrets(userSecret)
-        .SaveApplicationOptions();
+        .SaveUserSecrets(userSecret, logger)
+        .SaveApplicationOptions(logger);
 
     if (family == null) return 0;   // exiting
 

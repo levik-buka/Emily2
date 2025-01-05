@@ -11,6 +11,6 @@ namespace emily2.Family
     internal class Family(ApplicationOptions appSettings, ILogger<Family> logger)
     {
         private ApplicationOptions _appSettings = appSettings;
-        private ILogger<Family> _logger = logger;
+        private readonly ILogger<Family> _logger = logger;
     }
 }

@@ -29,20 +29,18 @@ namespace emily2.Options
     {
         public static readonly string APPLICATION_OPTIONS_FILE = "appsettings.json";
 
-        private ILogger _logger = Logger.LoggerExtensions.CreateClassLogger();
-
-        public UserOptions User { get; set; }
+        public UserOptions? User { get; set; }
 
         public SecretContainer SecretContainer { get; set; }
 
-        public string ProjectPath { get; set; }
+        public string? ProjectPath { get; set; }
 
         /// <summary>
         /// Method has side effects
         /// </summary>
-        public void SaveApplicationOptions()
+        public void SaveApplicationOptions(ILogger logger)
         {
-            _logger.LogTraceMethod();
+            logger.LogTraceMethod();
 
             var updatedOptionsJson = GenerateApplicationOptions(this);
 
@@ -52,12 +50,14 @@ namespace emily2.Options
 
         internal static string GenerateApplicationOptions(ApplicationOptions options)
         {
+#pragma warning disable CA1869
             // serialize SecretOptions
             var updatedSecretsJson = JsonSerializer.Serialize(options, new JsonSerializerOptions { WriteIndented = true });
             return updatedSecretsJson;
+#pragma warning restore CA1869
         }
 
-        internal void SetProjectPathForFamily(string family)
+        internal void SetProjectPathForFamily(string? family)
         {
             if (string.IsNullOrEmpty(family))
             {

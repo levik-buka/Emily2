@@ -13,45 +13,38 @@ namespace emily2.Logger
     {
         private static readonly int STACK_FRAME_OFFSET = 1;
 
-        /// <summary>
-        /// Global logger factory saved here
-        /// </summary>
-        internal static ILoggerFactory LoggerFactory { get; set; }
-
-        internal static ILogger CreateClassLogger()
+        internal static ILogger CreateClassLogger(this ILoggerFactory logFactory)
         {
-            StackTrace st = new StackTrace();
-            StackFrame sf = st.GetFrame(STACK_FRAME_OFFSET);
+            StackFrame? sf = new StackTrace().GetFrame(STACK_FRAME_OFFSET);
 
-            return LoggerFactory.CreateLogger(sf.GetMethod().DeclaringType.Name);
+            return logFactory.CreateLogger(sf!.GetMethod()!.DeclaringType!.Name);
         }
 
         internal static LoggerScope BeginMethodScope(this ILogger logger, params object[] args)
         {
-            StackTrace st = new StackTrace();
-            StackFrame sf = st.GetFrame(STACK_FRAME_OFFSET);
+            StackFrame? sf = new StackTrace().GetFrame(STACK_FRAME_OFFSET);
 
-            return new LoggerScope(logger, sf.GetMethod(), args);
+            return new LoggerScope(logger, sf!.GetMethod(), args);
         }
 
         internal static LoggerScope BeginSubScope(this LoggerScope parentScope, params object[] args)
         {
-            StackTrace st = new StackTrace();
-            StackFrame sf = st.GetFrame(STACK_FRAME_OFFSET);
+            StackFrame? sf = new StackTrace().GetFrame(STACK_FRAME_OFFSET);
 
-            return new LoggerScope(parentScope, sf.GetMethod(), args);
+            return new LoggerScope(parentScope, sf!.GetMethod(), args);
         }
 
         internal static void LogTraceMethod(this ILogger logger, params object[] args)
         {
-            StackTrace st = new StackTrace();
-            StackFrame sf = st.GetFrame(STACK_FRAME_OFFSET);
+            StackFrame? sf = new StackTrace().GetFrame(STACK_FRAME_OFFSET);
 
-            logger.LogTrace("Call {method}", sf.GetMethod().MethodWithParamsToString(args));
+            logger.LogTrace("Call {method}", sf!.GetMethod().MethodWithParamsToString(args));
         }
 
-        internal static string MethodWithParamsToString(this MethodBase mehtod, params object[] args)
+        internal static string MethodWithParamsToString(this MethodBase? mehtod, params object[] args)
         {
+            ArgumentNullException.ThrowIfNull(mehtod);
+
             var strBuilder = new StringBuilder();
             strBuilder.Append(mehtod.ToString());
             strBuilder.ParasParams(mehtod.GetParameters(), args);

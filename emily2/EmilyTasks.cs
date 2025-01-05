@@ -3,11 +3,11 @@ using Microsoft.Extensions.Logging;
 
 namespace emily2
 {
-    internal class EmilyTasks()
+    internal class EmilyTasks
     {
-        internal static ApplicationOptions CheckOrCreateUser(ApplicationOptions appSettings, SecretOptions secretOptions)
+        internal static ApplicationOptions? CheckOrCreateUser(ApplicationOptions? appSettings, SecretOptions? secretOptions)
         {
-            if (appSettings == null) throw new ArgumentNullException(nameof(appSettings));
+            ArgumentNullException.ThrowIfNull(appSettings);
 
             bool newUser = false;
 
@@ -29,8 +29,8 @@ namespace emily2
 
             // Write the values to the console.
             Console.WriteLine($"Username: {appSettings.User.UserName} <{appSettings.User.Email}>");
-            Console.WriteLine($"{appSettings.User.RSA.ExportRSAPrivateKeyPem()}");
-            Console.WriteLine($"{appSettings.User.RSA.ExportRSAPublicKeyPem()}");
+            Console.WriteLine($"{appSettings.User.RSA!.ExportRSAPrivateKeyPem()}");
+            Console.WriteLine($"{appSettings.User.RSA!.ExportRSAPublicKeyPem()}");
             Console.WriteLine($"Secret container: {appSettings.SecretContainer}");
 
             if (newUser)
@@ -53,9 +53,9 @@ namespace emily2
             return appSettings;
         }
 
-        internal static Family.Family CheckOrCreateProject(ApplicationOptions appSettings)
+        internal static Family.Family? CheckOrCreateProject(ApplicationOptions? appSettings, ILoggerFactory logFactory)
         {
-            if (appSettings == null) throw new ArgumentNullException(nameof(appSettings));
+            ArgumentNullException.ThrowIfNull(appSettings);
 
             // initializating project
             bool? openOrCreateProject = null;
@@ -100,7 +100,7 @@ namespace emily2
             if (openOrCreateProject == true)
             {
                 Console.WriteLine($"Opening family's project path: {appSettings.ProjectPath}");
-                return new Family.Family(appSettings, Logger.LoggerExtensions.LoggerFactory.CreateLogger<Family.Family>());
+                return new Family.Family(appSettings, logFactory.CreateLogger<Family.Family>());
             }
 
             // return null to exit application
