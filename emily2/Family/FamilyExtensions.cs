@@ -12,13 +12,17 @@ namespace emily2.Family
 {
     internal static class FamilyExtensions
     {
-        internal static IFamilyRepository CreateFamilyRepository(this ApplicationOptions appSettings, ILoggerFactory logFactory)
+        internal static FamilyProjectManager CreateFamilyProjectManager(this ApplicationOptions appSettings, ILoggerFactory logFactory)
         {
             ArgumentNullException.ThrowIfNull(appSettings);
 
+            var family = new Family(appSettings.GetFamilyName()!, logFactory.CreateLogger<Family>());
+
             // here can be created any FamilyRepository based on application options
             // but currently only drive repository is supported
-            return new DriveRepository(appSettings, logFactory.CreateLogger<DriveRepository>());
+            IFamilyRepository repository = new DriveRepository(appSettings.ProjectPath!, logFactory.CreateLogger<DriveRepository>());
+            
+            return new FamilyProjectManager(family, repository, logFactory);
         }
     }
 }

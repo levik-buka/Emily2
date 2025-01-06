@@ -1,4 +1,5 @@
-﻿using emily2.Options;
+﻿using emily2.Family;
+using emily2.Options;
 using Microsoft.Extensions.Logging;
 
 namespace emily2
@@ -53,7 +54,7 @@ namespace emily2
             return appSettings;
         }
 
-        internal static Family.Family? CheckOrCreateProject(ApplicationOptions? appSettings, ILoggerFactory logFactory)
+        internal static FamilyProjectManager? CheckOrCreateProject(ApplicationOptions? appSettings, ILoggerFactory logFactory)
         {
             ArgumentNullException.ThrowIfNull(appSettings);
 
@@ -101,7 +102,7 @@ namespace emily2
             if (openOrCreateProject == true)
             {
                 Console.WriteLine($"Opening family's project path: {appSettings.ProjectPath}");
-                return new Family.Family(appSettings.GetFamilyName()!, logFactory.CreateLogger<Family.Family>());
+                return appSettings.CreateFamilyProjectManager(logFactory);
             }
 
             // return null to exit application

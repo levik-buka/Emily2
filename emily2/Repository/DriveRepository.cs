@@ -11,20 +11,17 @@ using System.Xml.Linq;
 
 namespace emily2.Repository
 {
-    internal class DriveRepository(ApplicationOptions appSettings, ILogger<DriveRepository> logger) : IFamilyRepository
+    internal class DriveRepository(string projectPath, ILogger<DriveRepository> logger) : IFamilyRepository
     {
-        ILogger IFamilyRepository.Logger => logger;
-
-        ApplicationOptions IFamilyRepository.AppSettings => appSettings;
-
         public int LoadFamilyMembers(Family.Family family)
         {
             using var logScope = logger.BeginMethodScope();
+            ArgumentException.ThrowIfNullOrEmpty(projectPath);
 
             int subDirectoryCount = 0;
             int addedMembersCount = 0;
 
-            var familyDirectory = new DirectoryInfo(appSettings.ProjectPath!);
+            var familyDirectory = new DirectoryInfo(projectPath);
             foreach (var subDirectory in familyDirectory.EnumerateDirectories())
             {
                 subDirectoryCount++;

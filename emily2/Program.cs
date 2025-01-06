@@ -37,7 +37,7 @@ try
     appSettings = EmilyTasks.CheckOrCreateUser(appSettings, userSecret);
     if (appSettings == null) return 0; // exiting
 
-    Family? family = EmilyTasks.CheckOrCreateProject(appSettings, loggerFactory);
+    FamilyProjectManager? familyManager = EmilyTasks.CheckOrCreateProject(appSettings, loggerFactory);
 
     // saving settings before opening the project
     // so settings will be saved even if application falls
@@ -45,13 +45,12 @@ try
         .SaveUserSecrets(userSecret, logger)
         .SaveApplicationOptions(logger);
 
-    if (family == null) return 0;   // exiting
+    if (familyManager == null) return 0;   // exiting
 
-    IFamilyRepository repository = appSettings.CreateFamilyRepository(loggerFactory);
-    repository.LoadFamilyMembers(family);
-    repository.AddUserToFamilyMembers(family);
+    familyManager.LoadFamilyMembers();
+    familyManager.AddUserToFamilyMembers(appSettings);
 
-    EmilyTasks.PrintFamilyMembers(family);
+    EmilyTasks.PrintFamilyMembers(familyManager.Family);
 }
 catch (Exception e)
 {
