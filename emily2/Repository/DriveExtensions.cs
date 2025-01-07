@@ -11,14 +11,21 @@ namespace emily2.Repository
     {
         public static string GetFamilyMemberJsonFilename(this FamilyMember member, string projectPath)
         {
-            string memberName = string.Join(' ', [member.LastName, member.FirstName, member.Index]).Trim();
-            if (string.IsNullOrEmpty(memberName))
+            projectPath = Path.TrimEndingDirectorySeparator(projectPath);
+            string dirName = member.GetFamilyMemberDirectoryName();
+            return $"{projectPath}\\{dirName}\\{dirName}.json";
+        }
+
+        private static string GetFamilyMemberDirectoryName(this FamilyMember member)
+        {
+            string directoryName = string.Join(' ', [member.LastName, member.FirstName, member.Index]).Trim();
+
+            if (string.IsNullOrEmpty(directoryName))
             {
-                throw new InvalidOperationException($"Can not get family member's filename because of missing name ({member.Name})");
+                throw new InvalidOperationException($"Can not get family member's directory name because of missing name ({member.Name})");
             }
 
-            projectPath = Path.TrimEndingDirectorySeparator(projectPath);
-            return $"{projectPath}\\{memberName}\\{memberName}.json";
+            return directoryName;
         }
 
         public static string GetFamilyMemberJsonFilename(this DirectoryInfo memberDir)

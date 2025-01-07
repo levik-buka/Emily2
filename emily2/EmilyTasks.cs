@@ -125,5 +125,35 @@ namespace emily2
                 Console.WriteLine();
             }
         }
+
+        internal static ConsoleKeyInfo PrintOperationMenu()
+        {
+            Console.WriteLine("Operation menu:");
+            Console.WriteLine("\t0.   Add new family member");
+            Console.WriteLine("\t1-n. Export family to selected family member");
+            Console.WriteLine("\tESC. Exit");
+            Console.WriteLine();
+            return Console.ReadKey(true);
+        }
+
+        internal static FamilyMember? CreateNewFamilyMember()
+        {
+            var member = new FamilyMember();
+
+            Console.Write("Input member's first name: ");
+            member.FirstName = Console.ReadLine();
+            if (string.IsNullOrEmpty(member.FirstName))
+            {
+                return null;
+            }
+
+            Console.Write("Input member's last name: ");
+            member.LastName = Console.ReadLine();
+
+            Console.Write("Input member's e-mail: ");
+            member.Email = Console.ReadLine();
+
+            return member;
+        }
     }
 }

@@ -53,14 +53,22 @@ namespace emily2.Repository
         {
             using var logScope = logger.BeginMethodScope(member.Name);
 
-            string memberPath = member.GetFamilyMemberJsonFilename(projectPath);
-            logScope.LogTrace("Saving family member to {path}", memberPath);
+            try
+            {
+                string memberPath = member.GetFamilyMemberJsonFilename(projectPath);
+                logScope.LogTrace("Saving family member to {path}", memberPath);
 
-            // create member directory if missing
-            Directory.CreateDirectory(Path.GetDirectoryName(memberPath)!);
+                // create member directory if missing
+                Directory.CreateDirectory(Path.GetDirectoryName(memberPath)!);
 
-            var memberJson = JsonSerializer.Serialize(member, JSON_SERIALIZATION_OPTIONS);
-            File.WriteAllText(memberPath, memberJson);
+                var memberJson = JsonSerializer.Serialize(member, JSON_SERIALIZATION_OPTIONS);
+                File.WriteAllText(memberPath, memberJson);
+            }
+            catch (Exception ex)
+            {
+                logger.LogError(ex, "Failed to save family member's file. ");
+                throw;
+            }
         }
 
     }

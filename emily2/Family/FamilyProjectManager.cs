@@ -52,5 +52,10 @@ namespace emily2.Family
         {
             return repository.LoadFamilyMembers(family);
         }
+
+        internal void AddNewFamilyMember(FamilyMember member)
+        {
+            family.AddFamilyMember(member);
+        }
     }
 }
