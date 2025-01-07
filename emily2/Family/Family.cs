@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace emily2.Family
 {
-    internal class Family(string name, ILogger<Family> logger) : IEnumerable<FamilyMember>
+    public class Family(string name, ILogger<Family> logger) : IEnumerable<FamilyMember>
     {
         private readonly List<FamilyMember> _members = [];
 

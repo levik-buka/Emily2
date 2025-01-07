@@ -4,6 +4,9 @@ using Microsoft.Extensions.Logging;
 
 namespace emily2
 {
+    /// <summary>
+    /// UI tasks of the application
+    /// </summary>
     internal class EmilyTasks
     {
         internal static ApplicationOptions? CheckOrCreateUser(ApplicationOptions? appSettings, SecretOptions? secretOptions)

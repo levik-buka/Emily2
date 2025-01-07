@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace emily2.Options
 {
-    internal class UserOptions
+    public class UserOptions
     {
         public string? UserName { get; set; }
         public string? Email { get; set; }

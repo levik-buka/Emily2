@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace emily2.Repository
 {
-    internal interface IFamilyRepository
+    public interface IFamilyRepository
     {
         /// <summary>
         /// Loads members to the family

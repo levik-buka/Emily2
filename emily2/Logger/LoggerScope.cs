@@ -59,6 +59,13 @@ namespace emily2.Logger
 #pragma warning restore CA2254
         }
 
+        public void LogExceptionWarning(Exception e, string? message, params object?[] args)
+        {
+#pragma warning disable CA2254
+            _logger.Log(LogLevel.Warning, _eventId, e, message, args);
+#pragma warning restore CA2254
+        }
+
         // // TODO: override finalizer only if 'Dispose(bool disposing)' has code to free unmanaged resources
         // ~LoggerScope()
         // {

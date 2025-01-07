@@ -10,7 +10,13 @@ using System.Threading.Tasks;
 
 namespace emily2.Family
 {
-    internal class FamilyProjectManager(Family family, IFamilyRepository repository, ILoggerFactory logFactory)
+    /// <summary>
+    /// Glue class between business logic and repository
+    /// </summary>
+    /// <param name="family"></param>
+    /// <param name="repository"></param>
+    /// <param name="logFactory"></param>
+    public class FamilyProjectManager(Family family, IFamilyRepository repository, ILoggerFactory logFactory)
     {
         private readonly ILogger _logger = logFactory.CreateClassLogger();
 
@@ -42,7 +48,7 @@ namespace emily2.Family
             return false;
         }
 
-        internal int LoadFamilyMembers()
+        public int LoadFamilyMembers()
         {
             return repository.LoadFamilyMembers(family);
         }

@@ -26,7 +26,7 @@ namespace emily2.Options
         SettingsFile
     }
 
-    internal class ApplicationOptions
+    public class ApplicationOptions
     {
         public static readonly string APPLICATION_OPTIONS_FILE = "appsettings.json";
 
