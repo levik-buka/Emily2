@@ -34,7 +34,7 @@ namespace emily2.Repository
                     string memberJson = File.ReadAllText(subDirectory.GetFamilyMemberJsonFilename());
                     var familyMember = JsonSerializer.Deserialize<FamilyMember>(memberJson);
 
-                    if (family.AddFamilyMember(familyMember))
+                    if (family.AddFamilyMember(familyMember, FamilyDuplicatePolicy.RejectDuplicate) != null)
                     {
                         addedMembersCount++;
                     }

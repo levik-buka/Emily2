@@ -39,9 +39,10 @@ namespace emily2.Family
                 Email = appSettings.User.Email
             };
 
-            if (family.AddFamilyMember(user))
+            var newMember = family.AddFamilyMember(user, FamilyDuplicatePolicy.RejectDuplicate);
+            if (newMember != null)
             {
-                repository.SaveFamilyMember(user);
+                repository.SaveFamilyMember(newMember);
                 return true;
             }
 
@@ -53,9 +54,16 @@ namespace emily2.Family
             return repository.LoadFamilyMembers(family);
         }
 
-        internal void AddNewFamilyMember(FamilyMember member)
+        internal bool AddNewFamilyMember(FamilyMember member)
         {
-            family.AddFamilyMember(member);
+            var newMember = family.AddFamilyMember(member, FamilyDuplicatePolicy.IncreaseIndexForDuplicate);
+            if (newMember != null)
+            {
+                repository.SaveFamilyMember(newMember);
+                return true;
+            }
+
+            return false;
         }
     }
 }

@@ -11,7 +11,7 @@ namespace emily2.Options
 {
     internal static class OptionsExtensions
     {
-        internal static ApplicationOptions? LoadUserSecrets(this ApplicationOptions? appSettings, SecretOptions? secretOptions)
+        internal static ApplicationOptions? LoadUserSecrets(this ApplicationOptions? appSettings, SecretOptions? secretOptions, ILogger logger)
         {
             if (string.IsNullOrEmpty(appSettings?.User?.Email))
             {
@@ -22,6 +22,8 @@ namespace emily2.Options
 
             if (appSettings.SecretContainer == SecretContainer.UserContainer)
             {
+                logger.LogTrace("Loading user secret from user container");
+
 #pragma warning disable CA1416
                 // supported only on Windows (pragma)
                 // https://learn.microsoft.com/en-us/dotnet/standard/security/how-to-store-asymmetric-keys-in-a-key-container
@@ -43,11 +45,13 @@ namespace emily2.Options
                 if (string.IsNullOrEmpty(secretOptions?.PrivateKey))
                 {
                     // RSA key missing, re-generate
+                    logger.LogTrace("Generating new user secret");
                     appSettings.User.RSA = RSA.Create();
                 }
                 else
                 {
                     // importing existing RSA key from private PEM key
+                    logger.LogTrace("Importing user secret from secret.json");
                     appSettings.User.RSA = new RSACryptoServiceProvider();
                     appSettings.User.RSA.ImportFromPem(secretOptions.PrivateKey);
                 }
@@ -69,6 +73,7 @@ namespace emily2.Options
             // if user set
             if (!string.IsNullOrEmpty(appSettings.User?.Email) && appSettings?.SecretContainer == SecretContainer.SettingsFile)
             {
+                logger.LogTrace("Exporting user secret to secret.json");
                 secretOptions.PrivateKey = appSettings.User.RSA!.ExportRSAPrivateKeyPem();
             }
 

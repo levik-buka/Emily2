@@ -32,9 +32,9 @@ try
     SecretOptions userSecret = config.Get<SecretOptions>()!;
     ApplicationOptions? appSettings = config
         .Get<ApplicationOptions>()?
-        .LoadUserSecrets(userSecret);
+        .LoadUserSecrets(userSecret, logger);
 
-    appSettings = EmilyTasks.CheckOrCreateUser(appSettings, userSecret);
+    appSettings = EmilyTasks.CheckOrCreateUser(appSettings, userSecret, logger);
     if (appSettings == null) return 0; // exiting
 
     FamilyProjectManager? familyManager = EmilyTasks.CheckOrCreateProject(appSettings, loggerFactory);

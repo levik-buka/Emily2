@@ -9,7 +9,7 @@ namespace emily2
     /// </summary>
     internal class EmilyTasks
     {
-        internal static ApplicationOptions? CheckOrCreateUser(ApplicationOptions? appSettings, SecretOptions? secretOptions)
+        internal static ApplicationOptions? CheckOrCreateUser(ApplicationOptions? appSettings, SecretOptions? secretOptions, ILogger logger)
         {
             ArgumentNullException.ThrowIfNull(appSettings);
 
@@ -28,7 +28,7 @@ namespace emily2
                 appSettings.User.Email = Console.ReadLine();
 
                 // create new RSA key for the user
-                appSettings.LoadUserSecrets(secretOptions);
+                appSettings.LoadUserSecrets(secretOptions, logger);
             }
 
             // Write the values to the console.

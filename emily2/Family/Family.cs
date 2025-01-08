@@ -1,13 +1,6 @@
 ﻿using emily2.Logger;
-using emily2.Options;
-using emily2.Repository;
 using Microsoft.Extensions.Logging;
-using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace emily2.Family
 {
@@ -27,11 +20,11 @@ namespace emily2.Family
             return ((IEnumerable)_members).GetEnumerator();
         }
 
-        public bool AddFamilyMember(FamilyMember? member)
+        public FamilyMember? AddFamilyMember(FamilyMember? member, Func<FamilyMember, bool> duplicatePolicy)
         {
             logger.LogTraceMethod();
 
-            if (member == null) return false;
+            if (member == null) return null;
 
             // check duplicate by email
             if (!string.IsNullOrEmpty(member.Email))
@@ -43,7 +36,7 @@ namespace emily2.Family
                         member.Name,
                         existingMember.Name,
                         existingMember.Email);
-                    return false;
+                    return null;
                 }
             }
 
@@ -56,13 +49,23 @@ namespace emily2.Family
                         member.Name,
                         existingMember.Name,
                         existingMember.Email);
-                    return false;
+                    return null;
                 }
             }
 
-            logger.LogTrace("Adding member ({member.Id} - {member.Name}) to family", member.Id, member.Name);
+            // check duplicate by Name and Index
+            {
+                var existingMember = _members.FirstOrDefault(m => (m.Name == member.Name && m.Index == member.Index));
+                if (existingMember != null && duplicatePolicy(member) == true)
+                {
+                    // duplicate policy changed member's data, so let's try to add again
+                    return AddFamilyMember(member, duplicatePolicy);
+                }
+            }
+
+            logger.LogTrace("Adding member ({member.Id} - {member.Name}/index: {member.Index}) to family", member.Id, member.Name, member.Index);
             _members.Add(member);
-            return true;
+            return member;
         }
     }
 }

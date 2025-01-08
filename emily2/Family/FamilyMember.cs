@@ -30,5 +30,11 @@ namespace emily2.Family
         }
 
         public string? Email { get; set; }
+
+        public void IncreaseIndex()
+        {
+            if (Index != null) { Index++; }
+            else { Index = 1; }
+        }
     }
 }
