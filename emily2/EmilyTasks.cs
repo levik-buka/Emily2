@@ -136,6 +136,22 @@ namespace emily2
                 {
                     GoFamilyMemberOperationMenu(familyManager, operation);
                 }
+
+                if (operation.Key == ConsoleKey.T)
+                {
+                    Console.WriteLine($"Reading family tree from disk...");
+                    Console.WriteLine();
+                }
+                if (operation.Key == ConsoleKey.S)
+                {
+                    Console.WriteLine($"Reading family tree's secret key from disk...");
+                    Console.WriteLine();
+                }
+                if (operation.Key == ConsoleKey.C)
+                {
+                    Console.WriteLine($"Reading contact information from disk...");
+                    Console.WriteLine();
+                }
             }
             while (operation.Key != ConsoleKey.Escape);
         }
@@ -156,9 +172,12 @@ namespace emily2
 
         private static ConsoleKeyInfo PrintMainOperationMenu(Family.Family family)
         {
-            Console.WriteLine($"{family.Name}'s operation menu:");
+            Console.WriteLine($"{family.Name}'s family menu:");
             Console.WriteLine($"\t0.   Add new family member");
             Console.WriteLine($"\t1-{family.Count()}. Select family member");
+            Console.WriteLine($"\tT.   Read family tree from disk");
+            Console.WriteLine($"\tS.   Read family tree's secret key from disk");
+            Console.WriteLine($"\tC.   Read contact information from disk");
             Console.WriteLine($"\tESC. Exit");
             Console.WriteLine();
             return Console.ReadKey(true);
@@ -193,6 +212,27 @@ namespace emily2
             {
                 operation = PrintFamilyMemberOperationMenu(member);
 
+                if (!string.IsNullOrEmpty(member.Email))
+                {
+                    if (operation.Key == ConsoleKey.T)
+                    {
+                        Console.WriteLine($"Family tree is saved to disk. Send the file to {member.Email} over e-mail");
+                        Console.WriteLine();
+                    }
+                    if (!string.IsNullOrEmpty(member.PublicKey))
+                    {
+                        if (operation.Key == ConsoleKey.S)
+                        {
+                            Console.WriteLine($"Family tree's secret key is saved to disk. Send the file to {member.Email} over e-mail");
+                            Console.WriteLine();
+                        }
+                    }
+                    if (operation.Key == ConsoleKey.C)
+                    {
+                        Console.WriteLine($"Your contact information is saved to disk. Send the file to {member.Email} over e-mail");
+                        Console.WriteLine();
+                    }
+                }
             }
             while (operation.Key != ConsoleKey.Escape);
         }
@@ -216,14 +256,21 @@ namespace emily2
         private static ConsoleKeyInfo PrintFamilyMemberOperationMenu(FamilyMember member)
         {
             Console.WriteLine($"Selected {member.UniqueName}:");
+            Console.WriteLine($"\tEMAIL: {member.Email}");
+            Console.WriteLine();
 
             if (!string.IsNullOrEmpty(member.Email))
             {
-                Console.WriteLine($"\tC.   Send your contact information to {member.UniqueName}");
+                Console.WriteLine($"\tT.   Send family tree to {member.UniqueName}");
                 if (!string.IsNullOrEmpty(member.PublicKey))
                 {
-                    Console.WriteLine($"\tE.   Send family tree to {member.UniqueName}");
+                    Console.WriteLine($"\tS.   Send family tree's secret key to {member.UniqueName}");
                 }
+                else
+                {
+                    Console.WriteLine($"\t .   Family tree's secret key can not be sent to {member.UniqueName}, because of missing {member.Pronounce()} contact information");
+                }
+                Console.WriteLine($"\tC.   Send your contact information to {member.UniqueName}");
             }
 
             Console.WriteLine("\tESC. Exit");

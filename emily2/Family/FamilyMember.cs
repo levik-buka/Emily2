@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using emily2.Options;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,14 @@ using System.Threading.Tasks;
 
 namespace emily2.Family
 {
+    [JsonConverter(typeof(JsonStringEnumConverter<Gender>))]
+    public enum Gender
+    {
+        Undefined,
+        Male,
+        Female
+    }
+
     public class FamilyMember
     {
         public Guid Id { get; set; } = Guid.NewGuid();
@@ -31,6 +40,8 @@ namespace emily2.Family
 
         public string? Email { get; set; }
         public string? PublicKey { get; set; }
+
+        public Gender Gender { get; set; }
 
         public void IncreaseIndex()
         {

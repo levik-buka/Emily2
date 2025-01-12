@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace emily2.Family
@@ -31,6 +32,16 @@ namespace emily2.Family
             if (index <= 0 && index > family.Count()) return null;
 
             return family.ElementAt(index);
+        }
+
+        internal static string Pronounce(this FamilyMember member)
+        {
+            switch (member.Gender)
+            {
+                case Gender.Male: return "his";
+                case Gender.Female: return "her";
+                default: return "their";
+            }
         }
     }
 }
