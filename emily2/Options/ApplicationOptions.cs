@@ -34,7 +34,32 @@ namespace emily2.Options
 
         public SecretContainer SecretContainer { get; set; }
 
-        public string? ProjectPath { get; set; }
+        private string? _projectsBasePath;
+        public string? ProjectsBasePath 
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(_projectsBasePath))
+                {
+                    _projectsBasePath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Emily";
+                }
+                return _projectsBasePath;
+            }
+
+            set { _projectsBasePath = value; }
+        }
+
+        internal string? GetProjectPathForFamily(string? family)
+        {
+            if (string.IsNullOrEmpty(family))
+            {
+                return null;
+            }
+
+            return ProjectsBasePath + "\\" + family;
+        }
+
+        public string? LastProjectName { get; set; }
 
         /// <summary>
         /// Method has side effects
@@ -56,24 +81,6 @@ namespace emily2.Options
             var updatedSecretsJson = JsonSerializer.Serialize(options, new JsonSerializerOptions { WriteIndented = true });
             return updatedSecretsJson;
 #pragma warning restore CA1869
-        }
-
-        internal void SetProjectPathForFamily(string? family)
-        {
-            if (string.IsNullOrEmpty(family))
-            {
-                ProjectPath = null;
-                return;
-            }
-
-            ProjectPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\Emily\\" + family;
-        }
-
-        internal string? GetFamilyName()
-        {
-            if (ProjectPath == null) return null;
-
-            return new DirectoryInfo(ProjectPath).Name;
         }
     }
 }

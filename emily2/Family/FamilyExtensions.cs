@@ -16,11 +16,11 @@ namespace emily2.Family
         {
             ArgumentNullException.ThrowIfNull(appSettings);
 
-            var family = new Family(appSettings.GetFamilyName()!, logFactory.CreateLogger<Family>());
+            var family = new Family(appSettings.LastProjectName!, logFactory.CreateLogger<Family>());
 
             // here can be created any FamilyRepository based on application options
             // but currently only drive repository is supported
-            IFamilyRepository repository = new DriveRepository(appSettings.ProjectPath!, logFactory.CreateLogger<DriveRepository>());
+            IFamilyRepository repository = new DriveRepository(appSettings.GetProjectPathForFamily(appSettings.LastProjectName)!, logFactory.CreateLogger<DriveRepository>());
             
             return new FamilyProjectManager(family, repository, logFactory);
         }

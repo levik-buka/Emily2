@@ -1,6 +1,13 @@
 ﻿using emily2.Logger;
+using emily2.Options;
+using emily2.Repository;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace emily2.Family
 {
@@ -20,7 +27,7 @@ namespace emily2.Family
             return ((IEnumerable)_members).GetEnumerator();
         }
 
-        public FamilyMember? AddFamilyMember(FamilyMember? member, Func<FamilyMember, bool> duplicatePolicy)
+        public FamilyMember? AddFamilyMember(FamilyMember? member, Func<FamilyMember, FamilyMember?> duplicateNamePolicy)
         {
             logger.LogTraceMethod();
 
@@ -33,8 +40,8 @@ namespace emily2.Family
                 if (existingMember != null)
                 {
                     logger.LogWarning("Not adding new family member ({member.Name}), because existing member ({existingMember.Name}) has same email ({existingMember.Email})",
-                        member.Name,
-                        existingMember.Name,
+                        member.UniqueName,
+                        existingMember.UniqueName,
                         existingMember.Email);
                     return null;
                 }
@@ -46,24 +53,31 @@ namespace emily2.Family
                 if (existingMember != null)
                 {
                     logger.LogWarning("Not adding new family member ({member.Name}), because existing member ({existingMember.Name}) has same id ({existingMember.Id})",
-                        member.Name,
-                        existingMember.Name,
+                        member.UniqueName,
+                        existingMember.UniqueName,
                         existingMember.Email);
                     return null;
                 }
             }
 
-            // check duplicate by Name and Index
+            // check duplicate by Name
             {
-                var existingMember = _members.FirstOrDefault(m => (m.Name == member.Name && m.Index == member.Index));
-                if (existingMember != null && duplicatePolicy(member) == true)
+                var existingMember = _members.FirstOrDefault(m => m.UniqueName == member.UniqueName);
+                if (existingMember != null)
                 {
-                    // duplicate policy changed member's data, so let's try to add again
-                    return AddFamilyMember(member, duplicatePolicy);
+                    var newMember = duplicateNamePolicy(member);
+                    if (newMember == null)
+                    {
+                        logger.LogWarning("Not adding new family member ({member.Name}), because same named already exists in family",
+                            member.UniqueName);
+                        return null;
+                    }
+
+                    return AddFamilyMember(newMember, duplicateNamePolicy);
                 }
             }
 
-            logger.LogTrace("Adding member ({member.Id} - {member.Name}/index: {member.Index}) to family", member.Id, member.Name, member.Index);
+            logger.LogTrace("Adding member ({member.Id} - {member.Name}) to family", member.Id, member.UniqueName);
             _members.Add(member);
             return member;
         }

@@ -16,14 +16,14 @@ namespace emily2.Repository.Tests
         public void GetFamilyMemberJsonFilenameTest1()
         {
             var dirInfo = new DirectoryInfo("C:\\FOLDER\\sub_FOLDER");
-            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\sub_FOLDER.json", dirInfo.GetFamilyMemberJsonFilename());
+            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\sub_FOLDER.json", dirInfo.GetFamilyMemberConfigFilename());
         }
 
         [TestMethod()]
         public void GetFamilyMemberJsonFilenameTest2()
         {
             var dirInfo = new DirectoryInfo("C:\\FOLDER\\sub_FOLDER\\");
-            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\sub_FOLDER.json", dirInfo.GetFamilyMemberJsonFilename());
+            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\sub_FOLDER.json", dirInfo.GetFamilyMemberConfigFilename());
         }
 
         [TestMethod()]
@@ -32,12 +32,12 @@ namespace emily2.Repository.Tests
             try
             {
                 var member = new FamilyMember();
-                member.GetFamilyMemberJsonFilename("C:\\FOLDER\\sub_FOLDER");
+                member.GetFamilyMemberPathToConfigFile("C:\\FOLDER\\sub_FOLDER");
                 Assert.Fail("Empty family member should throw an exception");
             }
             catch (InvalidOperationException e)
             {
-                Assert.AreEqual("Can not get family member's filename because of missing name ( )", e.Message);
+                Assert.AreEqual("Can not get family member's directory name because of missing name ()", e.Message);
             }
         }
 
@@ -48,7 +48,7 @@ namespace emily2.Repository.Tests
             {
                 FirstName = "first"
             };
-            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\first\\first.json", member.GetFamilyMemberJsonFilename("C:\\FOLDER\\sub_FOLDER"));
+            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\first\\first.json", member.GetFamilyMemberPathToConfigFile("C:\\FOLDER\\sub_FOLDER"));
         }
 
         [TestMethod()]
@@ -58,7 +58,7 @@ namespace emily2.Repository.Tests
             {
                 LastName = "last"
             };
-            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\last\\last.json", member.GetFamilyMemberJsonFilename("C:\\FOLDER\\sub_FOLDER"));
+            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\last\\last.json", member.GetFamilyMemberPathToConfigFile("C:\\FOLDER\\sub_FOLDER"));
         }
 
         [TestMethod()]
@@ -68,7 +68,7 @@ namespace emily2.Repository.Tests
             {
                 Index = 11
             };
-            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\11\\11.json", member.GetFamilyMemberJsonFilename("C:\\FOLDER\\sub_FOLDER"));
+            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\11\\11.json", member.GetFamilyMemberPathToConfigFile("C:\\FOLDER\\sub_FOLDER"));
         }
 
         [TestMethod()]
@@ -79,7 +79,7 @@ namespace emily2.Repository.Tests
                 FirstName = "first",
                 LastName = "last"
             };
-            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\last first\\last first.json", member.GetFamilyMemberJsonFilename("C:\\FOLDER\\sub_FOLDER\\"));
+            Assert.AreEqual("C:\\FOLDER\\sub_FOLDER\\last first\\last first.json", member.GetFamilyMemberPathToConfigFile("C:\\FOLDER\\sub_FOLDER\\"));
         }
     }
 }

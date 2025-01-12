@@ -65,37 +65,38 @@ namespace emily2
             bool? openOrCreateProject = null;
             do
             {
-                if (string.IsNullOrEmpty(appSettings.ProjectPath))
+                if (string.IsNullOrEmpty(appSettings.LastProjectName))
                 {
                     Console.Write("Input family name (empty to exit): ");
-                    appSettings.SetProjectPathForFamily(Console.ReadLine());
+                    appSettings.LastProjectName = Console.ReadLine();
                 }
 
-                if (string.IsNullOrEmpty(appSettings.ProjectPath))
+                if (string.IsNullOrEmpty(appSettings.LastProjectName))
                 {
                     openOrCreateProject = false; // exiting
                 }
                 else
                 {
-                    if (Path.Exists(appSettings.ProjectPath))
+                    string projectPath = appSettings.GetProjectPathForFamily(appSettings.LastProjectName)!;
+                    if (Path.Exists(projectPath))
                     {
                         openOrCreateProject = true;
                     }
                     else
                     {
-                        Console.Write($"Family project path ({appSettings.ProjectPath}) missing. Create project (y/n)? ");
+                        Console.Write($"Family project path ({projectPath}) missing. Create project (y/n)? ");
                         ConsoleKeyInfo createProject = Console.ReadKey();
                         Console.WriteLine();
 
                         if (char.ToLower(createProject.KeyChar) == 'y')
                         {
-                            Directory.CreateDirectory(appSettings.ProjectPath);
+                            Directory.CreateDirectory(projectPath);
                             openOrCreateProject = true;
                         }
                         else
                         {
                             // reset family question and ask again
-                            appSettings.ProjectPath = null;
+                            appSettings.LastProjectName = null;
                         }
                     }
                 }
@@ -104,7 +105,7 @@ namespace emily2
 
             if (openOrCreateProject == true)
             {
-                Console.WriteLine($"Opening family's project path: {appSettings.ProjectPath}");
+                Console.WriteLine($"Opening family's project path: {appSettings.GetProjectPathForFamily(appSettings.LastProjectName)}");
                 return appSettings.CreateFamilyProjectManager(logFactory);
             }
 
@@ -119,7 +120,7 @@ namespace emily2
             foreach (var member in family ?? Enumerable.Empty<Family.FamilyMember>()) 
             {
                 // index starts from 1
-                Console.WriteLine($"{++index} - {member.Name}");
+                Console.WriteLine($"{++index} - {member.UniqueName}");
                 Console.WriteLine($"\tGUID:  {member.Id}");
                 Console.WriteLine($"\tEMAIL: {member.Email}");
                 Console.WriteLine();

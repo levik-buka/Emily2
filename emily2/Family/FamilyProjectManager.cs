@@ -36,10 +36,11 @@ namespace emily2.Family
             {
                 FirstName = appSettings.User.UserName,
                 LastName = family.Name,
-                Email = appSettings.User.Email
+                Email = appSettings.User.Email,
+                PublicKey = appSettings.User.RSA?.ExportRSAPublicKeyPem()
             };
 
-            var newMember = family.AddFamilyMember(user, FamilyDuplicatePolicy.RejectDuplicate);
+            var newMember = family.AddFamilyMember(user, FamilyDuplicatePolicy.RejectDuplicateNames);
             if (newMember != null)
             {
                 repository.SaveFamilyMember(newMember);
@@ -56,7 +57,7 @@ namespace emily2.Family
 
         internal bool AddNewFamilyMember(FamilyMember member)
         {
-            var newMember = family.AddFamilyMember(member, FamilyDuplicatePolicy.IncreaseIndexForDuplicate);
+            var newMember = family.AddFamilyMember(member, FamilyDuplicatePolicy.IncreaseIndexForDuplicateNames);
             if (newMember != null)
             {
                 repository.SaveFamilyMember(newMember);

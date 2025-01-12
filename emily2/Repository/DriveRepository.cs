@@ -31,10 +31,10 @@ namespace emily2.Repository
 
                 try
                 {
-                    string memberJson = File.ReadAllText(subDirectory.GetFamilyMemberJsonFilename());
+                    string memberJson = File.ReadAllText(subDirectory.GetFamilyMemberConfigFilename());
                     var familyMember = JsonSerializer.Deserialize<FamilyMember>(memberJson);
 
-                    if (family.AddFamilyMember(familyMember, FamilyDuplicatePolicy.RejectDuplicate) != null)
+                    if (family.AddFamilyMember(familyMember, FamilyDuplicatePolicy.RejectDuplicateNames) != null)
                     {
                         addedMembersCount++;
                     }
@@ -51,11 +51,11 @@ namespace emily2.Repository
 
         public void SaveFamilyMember(FamilyMember member)
         {
-            using var logScope = logger.BeginMethodScope(member.Name);
+            using var logScope = logger.BeginMethodScope(member.UniqueName);
 
             try
             {
-                string memberPath = member.GetFamilyMemberJsonFilename(projectPath);
+                string memberPath = member.GetFamilyMemberPathToConfigFile(projectPath);
                 logScope.LogTrace("Saving family member to {path}", memberPath);
 
                 // create member directory if missing

@@ -21,15 +21,16 @@ namespace emily2.Family
         public string? LastName { get; set; }
 
         [JsonIgnore]
-        public string Name 
+        public string UniqueName 
         { 
             get
             {
-                return string.Join(' ', [ FirstName, LastName ]);
+                return string.Join(' ', [LastName, FirstName, Index]).Trim();
             }
         }
 
         public string? Email { get; set; }
+        public string? PublicKey { get; set; }
 
         public void IncreaseIndex()
         {

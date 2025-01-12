@@ -9,16 +9,16 @@ namespace emily2.Family
     internal class FamilyDuplicatePolicy
     {
 #pragma warning disable IDE0060 // unused variable member
-        public static bool RejectDuplicate(FamilyMember member)
+        public static FamilyMember? RejectDuplicateNames(FamilyMember member)
         {
-            return false;
+            return null;
         }
 #pragma warning restore IDE0060
 
-        public static bool IncreaseIndexForDuplicate(FamilyMember member) 
+        public static FamilyMember? IncreaseIndexForDuplicateNames(FamilyMember member) 
         {
             member.IncreaseIndex();
-            return true; 
+            return member; 
         }
     }
 }

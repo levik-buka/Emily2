@@ -9,7 +9,7 @@ namespace emily2.Repository
 {
     public static class DriveExtensions
     {
-        public static string GetFamilyMemberJsonFilename(this FamilyMember member, string projectPath)
+        public static string GetFamilyMemberPathToConfigFile(this FamilyMember member, string projectPath)
         {
             projectPath = Path.TrimEndingDirectorySeparator(projectPath);
             string dirName = member.GetFamilyMemberDirectoryName();
@@ -18,17 +18,17 @@ namespace emily2.Repository
 
         private static string GetFamilyMemberDirectoryName(this FamilyMember member)
         {
-            string directoryName = string.Join(' ', [member.LastName, member.FirstName, member.Index]).Trim();
+            string directoryName = member.UniqueName;
 
             if (string.IsNullOrEmpty(directoryName))
             {
-                throw new InvalidOperationException($"Can not get family member's directory name because of missing name ({member.Name})");
+                throw new InvalidOperationException($"Can not get family member's directory name because of missing name ({member.UniqueName})");
             }
 
             return directoryName;
         }
 
-        public static string GetFamilyMemberJsonFilename(this DirectoryInfo memberDir)
+        public static string GetFamilyMemberConfigFilename(this DirectoryInfo memberDir)
         {
             string memberPath = Path.TrimEndingDirectorySeparator(memberDir.FullName);
             return $"{memberPath}\\{memberDir.Name}.json";
