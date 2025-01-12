@@ -113,7 +113,34 @@ namespace emily2
             return null;
         }
 
-        internal static void PrintFamilyMembers(Family.Family? family)
+        internal static void GoMainOperationMenu(FamilyProjectManager familyManager)
+        {
+            ConsoleKeyInfo operation;
+            do
+            {
+                PrintFamilyMembers(familyManager.Family);
+                operation = PrintMainOperationMenu(familyManager.Family);
+
+                // 0 - selected
+                if (operation.Key == ConsoleKey.D0 || operation.Key == ConsoleKey.NumPad0)
+                {
+                    FamilyMember? member = CreateNewFamilyMember();
+                    if (member != null)
+                    {
+                        familyManager.AddNewFamilyMember(member);
+                    }
+                }
+                // 1 - 9 selected
+                if ((operation.Key >= ConsoleKey.D1 && operation.Key <= ConsoleKey.D9) ||
+                    (operation.Key >= ConsoleKey.NumPad1 && operation.Key <= ConsoleKey.NumPad9))
+                {
+                    GoFamilyMemberOperationMenu(familyManager, operation);
+                }
+            }
+            while (operation.Key != ConsoleKey.Escape);
+        }
+
+        private static void PrintFamilyMembers(Family.Family? family)
         {
             int index = 0;
 
@@ -127,17 +154,17 @@ namespace emily2
             }
         }
 
-        internal static ConsoleKeyInfo PrintOperationMenu()
+        private static ConsoleKeyInfo PrintMainOperationMenu(Family.Family family)
         {
-            Console.WriteLine("Operation menu:");
-            Console.WriteLine("\t0.   Add new family member");
-            Console.WriteLine("\t1-n. Export family to selected family member");
-            Console.WriteLine("\tESC. Exit");
+            Console.WriteLine($"{family.Name}'s operation menu:");
+            Console.WriteLine($"\t0.   Add new family member");
+            Console.WriteLine($"\t1-{family.Count()}. Select family member");
+            Console.WriteLine($"\tESC. Exit");
             Console.WriteLine();
             return Console.ReadKey(true);
         }
 
-        internal static FamilyMember? CreateNewFamilyMember()
+        private static FamilyMember? CreateNewFamilyMember()
         {
             var member = new FamilyMember();
 
@@ -156,5 +183,53 @@ namespace emily2
 
             return member;
         }
+
+        private static void GoFamilyMemberOperationMenu(FamilyProjectManager familyManager, ConsoleKeyInfo operation)
+        {
+            FamilyMember? member = SelectFamilyMember(familyManager.Family, operation);
+            if (member == null) return;
+
+            do
+            {
+                operation = PrintFamilyMemberOperationMenu(member);
+
+            }
+            while (operation.Key != ConsoleKey.Escape);
+        }
+
+        private static FamilyMember? SelectFamilyMember(Family.Family family, ConsoleKeyInfo operation)
+        {
+            int index = 0;
+
+            if (operation.Key >= ConsoleKey.D1 && operation.Key <= ConsoleKey.D9)
+            {
+                index = (int)operation.Key - 49;
+            }
+            else if (operation.Key >= ConsoleKey.NumPad1 && operation.Key <= ConsoleKey.NumPad9)
+            {
+                index = (int)operation.Key - 97;
+            }
+
+            return family.GetFamilyMemberByIndex(index);
+        }
+
+        private static ConsoleKeyInfo PrintFamilyMemberOperationMenu(FamilyMember member)
+        {
+            Console.WriteLine($"Selected {member.UniqueName}:");
+
+            if (!string.IsNullOrEmpty(member.Email))
+            {
+                Console.WriteLine($"\tC.   Send your contact information to {member.UniqueName}");
+                if (!string.IsNullOrEmpty(member.PublicKey))
+                {
+                    Console.WriteLine($"\tE.   Send family tree to {member.UniqueName}");
+                }
+            }
+
+            Console.WriteLine("\tESC. Exit");
+            Console.WriteLine();
+            return Console.ReadKey(true);
+        }
+
     }
 }

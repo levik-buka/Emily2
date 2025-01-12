@@ -24,5 +24,13 @@ namespace emily2.Family
             
             return new FamilyProjectManager(family, repository, logFactory);
         }
+
+        internal static FamilyMember? GetFamilyMemberByIndex(this Family family, int index) 
+        { 
+            ArgumentNullException.ThrowIfNull(family);
+            if (index <= 0 && index > family.Count()) return null;
+
+            return family.ElementAt(index);
+        }
     }
 }

@@ -50,22 +50,7 @@ try
     familyManager.LoadFamilyMembers();
     familyManager.AddUserToFamilyMembers(appSettings);
 
-    ConsoleKeyInfo operation;
-    do
-    {
-        EmilyTasks.PrintFamilyMembers(familyManager.Family);
-        operation = EmilyTasks.PrintOperationMenu();
-
-        if (operation.Key == ConsoleKey.D0 || operation.Key == ConsoleKey.NumPad0)
-        {
-            FamilyMember? member = EmilyTasks.CreateNewFamilyMember();
-            if (member != null)
-            {
-                familyManager.AddNewFamilyMember(member);
-            }
-        }
-    }
-    while (operation.Key != ConsoleKey.Escape);
+    EmilyTasks.GoMainOperationMenu(familyManager);
 }
 catch (Exception e)
 {
