@@ -113,7 +113,7 @@ namespace emily2
             return null;
         }
 
-        internal static void GoMainOperationMenu(FamilyProjectManager familyManager)
+        internal static void GoMainOperationMenu(FamilyProjectManager familyManager, ApplicationOptions appSettings)
         {
             ConsoleKeyInfo operation;
             do
@@ -134,17 +134,12 @@ namespace emily2
                 if ((operation.Key >= ConsoleKey.D1 && operation.Key <= ConsoleKey.D9) ||
                     (operation.Key >= ConsoleKey.NumPad1 && operation.Key <= ConsoleKey.NumPad9))
                 {
-                    GoFamilyMemberOperationMenu(familyManager, operation);
+                    GoFamilyMemberOperationMenu(familyManager, appSettings, operation);
                 }
 
                 if (operation.Key == ConsoleKey.T)
                 {
                     Console.WriteLine($"Reading family tree from disk...");
-                    Console.WriteLine();
-                }
-                if (operation.Key == ConsoleKey.S)
-                {
-                    Console.WriteLine($"Reading family tree's secret key from disk...");
                     Console.WriteLine();
                 }
                 if (operation.Key == ConsoleKey.C)
@@ -176,7 +171,6 @@ namespace emily2
             Console.WriteLine($"\t0.   Add new family member");
             Console.WriteLine($"\t1-{family.Count()}. Select family member");
             Console.WriteLine($"\tT.   Read family tree from disk");
-            Console.WriteLine($"\tS.   Read family tree's secret key from disk");
             Console.WriteLine($"\tC.   Read contact information from disk");
             Console.WriteLine($"\tESC. Exit");
             Console.WriteLine();
@@ -203,7 +197,7 @@ namespace emily2
             return member;
         }
 
-        private static void GoFamilyMemberOperationMenu(FamilyProjectManager familyManager, ConsoleKeyInfo operation)
+        private static void GoFamilyMemberOperationMenu(FamilyProjectManager familyManager, ApplicationOptions appSettings, ConsoleKeyInfo operation)
         {
             FamilyMember? member = SelectFamilyMember(familyManager.Family, operation);
             if (member == null) return;
@@ -219,16 +213,9 @@ namespace emily2
                         Console.WriteLine($"Family tree is saved to disk. Send the file to {member.Email} over e-mail");
                         Console.WriteLine();
                     }
-                    if (!string.IsNullOrEmpty(member.PublicKey))
-                    {
-                        if (operation.Key == ConsoleKey.S)
-                        {
-                            Console.WriteLine($"Family tree's secret key is saved to disk. Send the file to {member.Email} over e-mail");
-                            Console.WriteLine();
-                        }
-                    }
                     if (operation.Key == ConsoleKey.C)
                     {
+                        //TODO: familyManager.ExportUserPublicKey(appSettings.User.RSA?.ExportRSAPublicKeyPem());
                         Console.WriteLine($"Your contact information is saved to disk. Send the file to {member.Email} over e-mail");
                         Console.WriteLine();
                     }
@@ -262,14 +249,6 @@ namespace emily2
             if (!string.IsNullOrEmpty(member.Email))
             {
                 Console.WriteLine($"\tT.   Send family tree to {member.UniqueName}");
-                if (!string.IsNullOrEmpty(member.PublicKey))
-                {
-                    Console.WriteLine($"\tS.   Send family tree's secret key to {member.UniqueName}");
-                }
-                else
-                {
-                    Console.WriteLine($"\t .   Family tree's secret key can not be sent to {member.UniqueName}, because of missing {member.Pronounce()} contact information");
-                }
                 Console.WriteLine($"\tC.   Send your contact information to {member.UniqueName}");
             }
 

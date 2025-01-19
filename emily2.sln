@@ -10,7 +10,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "emily2Tests", "emily2Tests\emily2Tests.csproj", "{CED14853-6769-4284-80E2-9B083CD374F6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "emily2Tests", "emily2Tests\emily2Tests.csproj", "{CED14853-6769-4284-80E2-9B083CD374F6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{9F05E143-57D2-4CF8-B4DB-C10195A67F31}"
+	ProjectSection(SolutionItems) = preProject
+		docs\architectural desicion records.md = docs\architectural desicion records.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +34,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9F05E143-57D2-4CF8-B4DB-C10195A67F31} = {0F56AB38-B4F2-4620-8AC2-FAE90D7EF29C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {585C336E-A905-4AFA-B200-9DF537EF5C03}

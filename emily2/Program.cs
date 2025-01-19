@@ -50,7 +50,7 @@ try
     familyManager.LoadFamilyMembers();
     familyManager.AddUserToFamilyMembers(appSettings);
 
-    EmilyTasks.GoMainOperationMenu(familyManager);
+    EmilyTasks.GoMainOperationMenu(familyManager, appSettings);
 }
 catch (Exception e)
 {
